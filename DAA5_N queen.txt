@@ -1,0 +1,53 @@
+# Input from user for number of queens
+N = int(input("Enter the number of queens: "))
+print(f"Entered number of queens: {N}\n")
+
+# Chessboard initialization (NxN matrix with all elements set to 0)
+board = [[0] * N for _ in range(N)]
+
+# Function to check if a position (i, j) is under attack by any other queen
+def is_attack(i, j):
+    # Check if there is a queen in the same row or column
+    for k in range(N):
+        if board[i][k] == 1 or board[k][j] == 1:
+            return True
+
+    # Check diagonals
+    for k in range(N):
+        for l in range(N):
+            if (k + l == i + j) or (k - l == i - j):  # Checking if in diagonal
+                if board[k][l] == 1:
+                    return True
+
+    return False
+
+# Recursive function to solve the N-Queens problem
+def N_queen(n):
+    # If n is 0, all queens are placed, return True (solution found)
+    if n == 0:
+        return True
+
+    # Try placing a queen in every position on the board
+    for i in range(N):
+        for j in range(N):
+            # Check if we can place a queen here
+            if not is_attack(i, j) and board[i][j] != 1:
+                board[i][j] = 1  # Place the queen
+                
+                # Recursively try to place the remaining queens
+                if N_queen(n - 1):
+                    return True  # If a valid arrangement is found, return True
+
+                # If placing the queen here does not lead to a solution, backtrack
+                board[i][j] = 0
+
+    return False
+
+# Solve the N-Queens problem
+if N_queen(N):
+    # Output the solution
+    print(f"Solution for {N}-Queens Problem:")
+    for row in board:
+        print(" ".join(str(x) for x in row))
+else:
+    print(f"No solution exists for {N}-Queens problem.")
