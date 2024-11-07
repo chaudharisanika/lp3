@@ -1,0 +1,106 @@
+import os
+import string
+from nltk.corpus import stopwords
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import numpy as np
+import pandas as pd
+
+
+df = pd.read_csv('spam_ham_dataset.csv')
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df.head()
+
+df = df.drop(['Unnamed: 0'], axis=1)
+df.head()
+print('Total %s data email'% len(df))
+
+#total class memebers
+df['label'].value_counts()
+
+
+#show graph
+df_label = sns.countplot(df['label'])
+df_label.set_xticklabels(df['label'].unique())
+plt.show()
+
+#data preprocessing
+#data text cleaning
+# punchuations
+punct = []
+for char in string.punctuation:
+    punct.append(char)
+
+import re
+
+def cleaning(txt):
+    # case folding
+    text = txt.lower()
+
+
+import re
+import string
+
+# Assuming `text` is defined somewhere before
+# Example text (replace this with your input text)
+text = "This is an example text with http://example.com, multiple  spaces, #hashtags, and @mentions!"
+
+# Remove multiple spaces, tabs, and newlines
+text = re.sub(r'\s+', ' ', text)  # Raw string for \s
+
+# Remove links
+text = text.replace("http://", " ").replace("https://", " ")    
+
+# Remove special characters (replace non-ASCII characters)
+text = text.encode('ascii', 'replace').decode('ascii')
+
+# Remove mentions, hashtags, and links
+text = ' '.join(re.sub(r"([@#][A-Za-z0-9]+)|(\w+:\/\/\S+)", " ", text).split())
+
+# Remove punctuation
+punct = string.punctuation  # Define punctuation characters
+text = ''.join([char for char in text if char not in punct])
+
+# Remove single characters
+text = re.sub(r"\b[a-zA-Z]\b", "", text)
+
+# Remove numbers
+text = re.sub(r"\d+", "", text)
+
+# Remove multiple spaces again
+text = re.sub(r'\s+', ' ', text)
+
+# The cleaned text is now stored in the `text` variable
+print(text)
+
+
+
+# call function for cleaning
+    # apply fungsi cleaning ke setiap text
+df['text_cleaned'] = df['text'].apply(lambda x: cleaning(x))
+df = df[['text', 'text_cleaned', 'label']]
+df.head()
+
+
+#compare
+print(df['text'][0])
+print(df['text_cleaned'][0])
+
+
+from nltk.corpus import stopwords
+
+# Get the list of stopwords
+stop = stopwords.words('english')
+
+# Apply the function to remove stopwords, handling None or NaN values
+df['text_cleaned'] = df['text_cleaned'].apply(lambda x: ' '.join([word for word in x.split() if word not in stop]) if x else '')
+
+# If you want to ensure no None values are present, you can also fill them with an empty string first:
+df['text_cleaned'] = df['text_cleaned'].fillna('')
+
+# Then apply the same lambda function to remove stopwords
+df['text_cleaned'] = df['text_cleaned'].apply(lambda x: ' '.join([word for word in x.split() if word not in stop]))
+

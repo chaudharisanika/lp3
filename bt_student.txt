@@ -1,0 +1,43 @@
+pragma solidity ^0.8.22;
+
+// SPDX-License-Identifier: GPL-3.0
+contract MarksManagmtSys {
+    struct Student {
+        int ID;
+        string fName;
+        string lName;
+        int marks;
+    }
+
+    address owner;
+    int public stdCount = 0;
+    mapping(int => Student) public stdRecords;
+    modifier onlyOwner {
+        require(owner == msg.sender, "Only owner can call this function");
+        _;
+    }
+
+    // Constructor to set the contract owner
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Function to add new student records
+    function addNewRecords(
+        int _ID,
+        string memory _fName,
+        string memory _lName,
+        int _marks
+    ) public onlyOwner {
+        // Increase the count by 1
+        stdCount = stdCount + 1;
+
+        // Store the student details
+        stdRecords[stdCount] = Student(_ID, _fName, _lName, _marks);
+    }
+
+    // Function to add bonus marks to the latest student record
+    function bonusMarks(int _bonus) public onlyOwner {
+        stdRecords[stdCount].marks = stdRecords[stdCount].marks + _bonus;
+    }
+}
